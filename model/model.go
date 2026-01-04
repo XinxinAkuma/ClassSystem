@@ -95,6 +95,9 @@ func (s *Signup) BeforeCreate(tx *gorm.DB) error {
 		}
 		return errors.New("查询活动信息失败：" + err.Error())
 	}
+	if activity.Status != "active" {
+		return errors.New("校验失败：该活动未处于可报名状态，无法新增报名")
+	}
 
 	now := time.Now()
 	if now.After(activity.EndTime) {

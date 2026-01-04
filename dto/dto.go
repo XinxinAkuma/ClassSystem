@@ -45,3 +45,8 @@ type GetUserNameByIDRequest struct {
 type DeleteUserByIDRequest struct {
 	UserID string `json:"userId"`
 }
+
+type ChangeActivityStatusRequest struct {
+	ActivityID uint   ` json:"activityId"`
+	Status     string `json:"status"`
+}

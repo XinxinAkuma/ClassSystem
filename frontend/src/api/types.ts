@@ -85,3 +85,8 @@ export interface DeleteUserRequest {
   userId: string;
 }
 
+export interface ChangeActivityStatusRequest {
+  activityId: number;
+  status: string;
+}
+

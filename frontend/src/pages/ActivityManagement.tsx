@@ -20,7 +20,7 @@ import {
   DeleteOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { getActivities, createActivity, deleteActivity, getClasses } from '../api/services';
+import { getActivities, createActivity, deleteActivity, getClasses, changeActivityStatus } from '../api/services';
 import type { Activity, CreateActivityRequest } from '../api/types';
 
 const { TextArea } = Input;
@@ -100,6 +100,19 @@ export default function ActivityManagement() {
     }
   };
 
+  const handleStatusChange = async (activityId: number, newStatus: string) => {
+    setLoading(true);
+    try {
+      await changeActivityStatus({ activityId, status: newStatus });
+      message.success('活动状态更新成功');
+      loadActivities();
+    } catch (error: any) {
+      message.error(error.message || '更新活动状态失败');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getStatusColor = (status: string) => {
     const statusMap: Record<string, string> = {
       pending: 'orange',
@@ -173,10 +186,28 @@ export default function ActivityManagement() {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
-      width: 100,
-      render: (status: string) => (
-        <Tag color={getStatusColor(status)}>{status}</Tag>
-      ),
+      width: 150,
+      render: (status: string, record: Activity) => {
+        const statusMap: Record<string, string> = {
+          pending: '待开始',
+          active: '进行中',
+          completed: '已完成',
+          cancelled: '已取消',
+        };
+        return (
+          <Select
+            value={status}
+            onChange={(value) => handleStatusChange(record.activityId, value)}
+            style={{ width: 120 }}
+            disabled={loading}
+          >
+            <Select.Option value="pending">待开始</Select.Option>
+            <Select.Option value="active">进行中</Select.Option>
+            <Select.Option value="completed">已完成</Select.Option>
+            <Select.Option value="cancelled">已取消</Select.Option>
+          </Select>
+        );
+      },
     },
     {
       title: '操作',

@@ -10,6 +10,7 @@ import type {
   DeleteActivityRequest,
   GetUserNameRequest,
   DeleteUserRequest,
+  ChangeActivityStatusRequest,
 } from './types';
 
 // 用户注册
@@ -65,5 +66,10 @@ export const getAllUsers = () => {
 // 删除用户
 export const deleteUser = (data: DeleteUserRequest) => {
   return api.delete('/user', { data });
+};
+
+// 改变活动状态
+export const changeActivityStatus = (data: ChangeActivityStatusRequest) => {
+  return api.put('/activities/status', data);
 };
 

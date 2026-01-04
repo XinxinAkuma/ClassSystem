@@ -132,6 +132,28 @@ func HandleCreateActivities(r flamego.Render, c flamego.Context, req dto.CreateA
 	response.HTTPSuccess(r, nil)
 }
 
+func HandleChangeActivityStatus(r flamego.Render, c flamego.Context, req dto.ChangeActivityStatusRequest, errors binding.Errors) {
+	if errors != nil {
+		response.ServiceErr(r)
+		return
+	}
+
+	var activity model.Activity
+	err := dao.DB.Model(&model.Activity{}).WithContext(c.Request().Context()).Where("activity_id = ?", req.ActivityID).First(&activity).Error
+	if err != nil {
+		response.ServiceErr(r, err)
+		return
+	}
+
+	err = dao.DB.Model(&model.Activity{}).WithContext(c.Request().Context()).Where("activity_id = ?", req.ActivityID).Update("status", req.Status).Error
+	if err != nil {
+		response.ServiceErr(r, err)
+		return
+	}
+
+	response.HTTPSuccess(r, nil)
+}
+
 func HandleSignUpActivity(r flamego.Render, c flamego.Context, req dto.SignupRequest, errors binding.Errors) {
 	if errors != nil {
 		response.Forbidden(r)

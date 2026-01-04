@@ -15,6 +15,7 @@ func RouteInit(e *flamego.Flame) {
 	e.Post("/getname", binding.JSON(dto.GetUserNameByIDRequest{}), handler.HandleGetUserNameByID)
 	e.Get("/class", handler.HandleGetClass)
 	e.Post("/activities", binding.JSON(dto.CreateActivitiesRequest{}), handler.HandleCreateActivities)
+	e.Put("/activities/status", binding.JSON(dto.ChangeActivityStatusRequest{}), handler.HandleChangeActivityStatus)
 	e.Post("/sign", binding.JSON(dto.SignupRequest{}), handler.HandleSignUpActivity)
 	e.Get("/sign", handler.HandleGetSignups)
 	e.Get("/activities", handler.HandleGetActivities)
