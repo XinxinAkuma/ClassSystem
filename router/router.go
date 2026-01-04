@@ -10,6 +10,8 @@ import (
 
 func RouteInit(e *flamego.Flame) {
 	e.Post("/register", binding.JSON(dto.RegisterRequest{}), handler.HandleRegister)
+	e.Get("/user", handler.HandleGetAllUsers)
+	e.Delete("/user", binding.JSON(dto.DeleteUserByIDRequest{}), handler.HandleDeleteUserByID)
 	e.Post("/getname", binding.JSON(dto.GetUserNameByIDRequest{}), handler.HandleGetUserNameByID)
 	e.Get("/class", handler.HandleGetClass)
 	e.Post("/activities", binding.JSON(dto.CreateActivitiesRequest{}), handler.HandleCreateActivities)

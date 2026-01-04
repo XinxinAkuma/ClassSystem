@@ -62,6 +62,32 @@ func HandleRegister(r flamego.Render, c flamego.Context, req dto.RegisterRequest
 
 }
 
+func HandleGetAllUsers(r flamego.Render, c flamego.Context) {
+	var users []model.User
+	err := dao.DB.Model(&model.User{}).WithContext(c.Request().Context()).Find(&users).Error
+	if err != nil {
+		response.ServiceErr(r, err.Error())
+		return
+	}
+
+	response.HTTPSuccess(r, users)
+}
+
+func HandleDeleteUserByID(r flamego.Render, c flamego.Context, req dto.DeleteUserByIDRequest, errors binding.Errors) {
+	if errors != nil {
+		response.ServiceErr(r)
+		return
+	}
+
+	err := dao.DB.Model(&model.User{}).WithContext(c.Request().Context()).Where("user_id = ?", req.UserID).Delete(&model.User{}).Error
+	if err != nil {
+		response.ServiceErr(r, err)
+		return
+	}
+
+	response.HTTPSuccess(r, nil)
+}
+
 func HandleGetUserNameByID(r flamego.Render, c flamego.Context, req dto.GetUserNameByIDRequest, errors binding.Errors) {
 	if errors != nil {
 		response.ServiceErr(r)

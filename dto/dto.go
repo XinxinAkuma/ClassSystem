@@ -41,3 +41,7 @@ type DeleteActivitiesRequest struct {
 type GetUserNameByIDRequest struct {
 	UserID string `json:"userId"`
 }
+
+type DeleteUserByIDRequest struct {
+	UserID string `json:"userId"`
+}
