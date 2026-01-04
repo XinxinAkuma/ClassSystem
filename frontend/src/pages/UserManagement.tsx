@@ -9,10 +9,13 @@ import {
   message,
   Modal,
   Select,
+  Popconfirm,
+  Tag,
 } from 'antd';
-import { SearchOutlined, UserAddOutlined } from '@ant-design/icons';
-import { register, getUserNameById, getClasses } from '../api/services';
-import type { RegisterRequest, Class } from '../api/types';
+import { SearchOutlined, UserAddOutlined, DeleteOutlined } from '@ant-design/icons';
+import { register, getUserNameById, getClasses, getAllUsers, deleteUser } from '../api/services';
+import type { RegisterRequest, Class, User } from '../api/types';
+import dayjs from 'dayjs';
 
 export default function UserManagement() {
   const [form] = Form.useForm();
@@ -21,9 +24,11 @@ export default function UserManagement() {
   const [modalVisible, setModalVisible] = useState(false);
   const [classes, setClasses] = useState<Class[]>([]);
   const [userName, setUserName] = useState<string>('');
+  const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
     loadClasses();
+    loadUsers();
   }, []);
 
   const loadClasses = async () => {
@@ -42,8 +47,21 @@ export default function UserManagement() {
       message.success('用户注册成功');
       form.resetFields();
       setModalVisible(false);
+      loadUsers();
     } catch (error: any) {
       message.error(error.message || '注册失败');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadUsers = async () => {
+    setLoading(true);
+    try {
+      const data = await getAllUsers();
+      setUsers(data);
+    } catch (error: any) {
+      message.error(error.message || '加载用户列表失败');
     } finally {
       setLoading(false);
     }
@@ -66,6 +84,111 @@ export default function UserManagement() {
       setLoading(false);
     }
   };
+
+  const handleDelete = async (userId: string) => {
+    setLoading(true);
+    try {
+      await deleteUser({ userId });
+      message.success('删除用户成功');
+      loadUsers();
+    } catch (error: any) {
+      message.error(error.message || '删除用户失败');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getRoleColor = (role: string) => {
+    const roleMap: Record<string, string> = {
+      学生: 'blue',
+      班长: 'green',
+      学习委员: 'orange',
+    };
+    return roleMap[role] || 'default';
+  };
+
+  const columns = [
+    {
+      title: '学号',
+      dataIndex: 'user_id',
+      key: 'user_id',
+      width: 150,
+    },
+    {
+      title: '姓名',
+      dataIndex: 'name',
+      key: 'name',
+      width: 120,
+    },
+    {
+      title: '手机号',
+      dataIndex: 'phone',
+      key: 'phone',
+      width: 130,
+    },
+    {
+      title: '邮箱',
+      dataIndex: 'email',
+      key: 'email',
+      width: 200,
+    },
+    {
+      title: '角色',
+      dataIndex: 'role',
+      key: 'role',
+      width: 120,
+      render: (role: string) => (
+        <Tag color={getRoleColor(role)}>{role}</Tag>
+      ),
+    },
+    {
+      title: '班级ID',
+      dataIndex: 'class_id',
+      key: 'class_id',
+      width: 120,
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
+      width: 100,
+      render: (status: number) => (
+        <Tag color={status === 1 ? 'green' : 'red'}>
+          {status === 1 ? '正常' : '禁用'}
+        </Tag>
+      ),
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'create_time',
+      key: 'create_time',
+      width: 180,
+      render: (time: string) => dayjs(time).format('YYYY-MM-DD HH:mm:ss'),
+    },
+    {
+      title: '操作',
+      key: 'action',
+      width: 120,
+      fixed: 'right' as const,
+      render: (_: any, record: User) => (
+        <Popconfirm
+          title="确定要删除这个用户吗？"
+          onConfirm={() => handleDelete(record.user_id)}
+          okText="确定"
+          cancelText="取消"
+        >
+          <Button
+            type="link"
+            danger
+            icon={<DeleteOutlined />}
+            loading={loading}
+          >
+            删除
+          </Button>
+        </Popconfirm>
+      ),
+    },
+  ];
 
   return (
     <div>
@@ -186,7 +309,7 @@ export default function UserManagement() {
                     <Select.Option key={cls.class_id} value={cls.class_name}>
                       {cls.class_name}
                     </Select.Option>
-                  ))}
+                  ))}ß
                 </Select>
               </Form.Item>
               <Form.Item>
@@ -206,6 +329,21 @@ export default function UserManagement() {
               </Form.Item>
             </Form>
           </Modal>
+        </Card>
+
+        <Card title="用户列表" style={{ marginTop: 24 }}>
+          <Table
+            columns={columns}
+            dataSource={users}
+            rowKey="user_id"
+            loading={loading}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              showTotal: (total) => `共 ${total} 条记录`,
+            }}
+            scroll={{ x: 1400 }}
+          />
         </Card>
       </Card>
     </div>

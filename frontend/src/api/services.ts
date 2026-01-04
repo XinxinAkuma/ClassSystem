@@ -9,6 +9,7 @@ import type {
   SignupRequest,
   DeleteActivityRequest,
   GetUserNameRequest,
+  DeleteUserRequest,
 } from './types';
 
 // 用户注册
@@ -54,5 +55,15 @@ export const signUpActivity = (data: SignupRequest) => {
 // 取消报名
 export const cancelSignUp = (data: SignupRequest) => {
   return api.delete('/sign', { data });
+};
+
+// 获取所有用户
+export const getAllUsers = () => {
+  return api.get<User[]>('/user');
+};
+
+// 删除用户
+export const deleteUser = (data: DeleteUserRequest) => {
+  return api.delete('/user', { data });
 };
 

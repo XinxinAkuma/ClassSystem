@@ -164,6 +164,12 @@ export default function ActivityManagement() {
       width: 100,
     },
     {
+      title: '负责人ID',
+      dataIndex: 'leaderId',
+      key: 'leaderId',
+      width: 120,
+    },
+    {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
@@ -224,7 +230,7 @@ export default function ActivityManagement() {
             showSizeChanger: true,
             showTotal: (total) => `共 ${total} 条记录`,
           }}
-          scroll={{ x: 1500 }}
+          scroll={{ x: 1600 }}
         />
 
         <Modal

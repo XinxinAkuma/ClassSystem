@@ -81,3 +81,7 @@ export interface GetUserNameRequest {
   userId: string;
 }
 
+export interface DeleteUserRequest {
+  userId: string;
+}
+

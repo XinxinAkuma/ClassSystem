@@ -6,25 +6,31 @@ import {
   CalendarOutlined,
   FileTextOutlined,
 } from '@ant-design/icons';
-import { getClasses, getActivities } from '../api/services';
+import { getClasses, getActivities, getAllUsers, getSignups } from '../api/services';
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     classes: 0,
     activities: 0,
+    users: 0,
+    signups: 0,
   });
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [classes, activities] = await Promise.all([
+        const [classes, activities, users, signups] = await Promise.all([
           getClasses(),
           getActivities(),
+          getAllUsers(),
+          getSignups(),
         ]);
         setStats({
           classes: classes.length,
           activities: activities.length,
+          users: users.length,
+          signups: signups.length,
         });
       } catch (error) {
         console.error('获取统计数据失败:', error);
@@ -70,7 +76,8 @@ export default function Dashboard() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="用户管理"
+              title="用户总数"
+              value={stats.users}
               prefix={<UserOutlined />}
               valueStyle={{ color: '#722ed1' }}
             />
@@ -79,7 +86,8 @@ export default function Dashboard() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="报名管理"
+              title="报名总数"
+              value={stats.signups}
               prefix={<FileTextOutlined />}
               valueStyle={{ color: '#eb2f96' }}
             />
