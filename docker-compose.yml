@@ -1,0 +1,12 @@
+version: '3.1'
+
+services:
+  class-system-postgres:
+    image: postgres:latest
+    restart: on-failure
+    environment:
+      POSTGRES_DB: ClassSystemDB
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "16432:5432"
